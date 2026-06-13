@@ -1,0 +1,9 @@
+{
+  "apiKey": "AIzaSyPlaceholder_Only_Real_Secrets_Will_Work",
+  "authDomain": "hanziverse-mock.firebaseapp.com",
+  "projectId": "hanziverse-mock",
+  "storageBucket": "hanziverse-mock.appspot.com",
+  "messagingSenderId": "000000000000",
+  "appId": "1:000000000000:web:mockapp",
+  "firestoreDatabaseId": "(default)"
+}

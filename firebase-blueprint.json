@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "UserProgress": {
+      "title": "User Progress",
+      "description": "Individual user progress tracking state",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "xp": { "type": "integer" },
+        "level": { "type": "integer" },
+        "streak": { "type": "integer" },
+        "lastActiveDate": { "type": "string" },
+        "streakHistory": { "type": "array" },
+        "completedLessons": { "type": "array" },
+        "savedBooks": { "type": "array" },
+        "watchHistory": { "type": "array" },
+        "completedQuizzes": { "type": "object" },
+        "savedVocabulary": { "type": "array" },
+        "learningGoal": { "type": "string" },
+        "onboarded": { "type": "boolean" },
+        "hskTargetLevel": { "type": "integer" }
+      },
+      "required": ["userId", "displayName", "xp", "level", "streak", "onboarded"]
+    },
+    "ForumPost": {
+      "title": "Forum Post",
+      "description": "Discussion post in the shared student forum",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "avatar": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "likes": { "type": "integer" },
+        "likedBy": { "type": "array" },
+        "replies": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "author", "content", "category", "likes", "likedBy", "replies", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/userProgress/{userId}": {
+      "schema": "UserProgress",
+      "description": "Tracks progress for an isolated user"
+    },
+    "/forumPosts/{postId}": {
+      "schema": "ForumPost",
+      "description": "Shared community forum post tracks"
+    }
+  }
+}

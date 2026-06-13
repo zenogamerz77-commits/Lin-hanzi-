@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net (Rule 1)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Global Helpers (Phase 3)
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation Blueprint for UserProgress
+    function isValidUserProgress(data) {
+      return data.userId is string 
+        && data.userId.size() <= 128
+        && data.displayName is string
+        && data.displayName.size() <= 100
+        && (data.email == null || (data.email is string && data.email.size() <= 200))
+        && (data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 1000))
+        && data.xp is int
+        && data.xp >= 0
+        && data.level is int
+        && data.level >= 1
+        && data.streak is int
+        && data.streak >= 0
+        && data.onboarded is bool;
+    }
+
+    // Validation Blueprint for ForumPost
+    function isValidForumPost(data) {
+      return data.id is string
+        && data.id.size() <= 128
+        && data.title is string
+        && data.title.size() <= 200
+        && data.author is string
+        && data.author.size() <= 100
+        && data.content is string
+        && data.content.size() <= 5000
+        && data.category is string
+        && data.category.size() <= 50
+        && data.likes is int
+        && data.likes >= 0
+        && data.likedBy is list
+        && data.likedBy.size() <= 1000
+        && data.replies is list
+        && data.replies.size() <= 500
+        && data.createdAt is string
+        && data.createdAt.size() <= 50;
+    }
+
+    // Match gates for collections (Phase 4)
+    match /userProgress/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProgress(incoming());
+      allow update: if isOwner(userId) && isValidUserProgress(incoming());
+      allow delete: if false;
+    }
+
+    match /forumPosts/{postId} {
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidForumPost(incoming());
+      allow update: if isSignedIn() && isValidForumPost(incoming())
+        && (
+          // Action: Modify likes, likedBy array, or add replies only
+          incoming().diff(existing()).affectedKeys().hasOnly(['likes', 'likedBy', 'replies'])
+        );
+      allow delete: if false;
+    }
+  }
+}

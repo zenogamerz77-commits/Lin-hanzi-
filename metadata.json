@@ -1,0 +1,10 @@
+{
+  "name": "HanziVerse",
+  "description": "Chinese learning website with Pinyin, stroke orders, HSK levels, comics, stories, and drama integration.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
